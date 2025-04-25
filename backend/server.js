@@ -17,68 +17,65 @@ app.use(cors({
 
 // Function to scrape Amazon using ScraperAPI
 const scrapeAmazon = async (keyword) => {
-    // Constructing the Amazon search URL
     const url = `https://www.amazon.com/s?k=${encodeURIComponent(keyword)}`;
-    // Constructing the ScraperAPI URL with the Amazon URL
     const apiUrl = `http://api.scraperapi.com?api_key=${SCRAPER_API_KEY}&url=${encodeURIComponent(url)}`;
 
     try {
-        // Making a GET request to ScraperAPI to fetch the HTML content
         const response = await axios.get(apiUrl);
-        
-        // Parsing the HTML content using JSDOM
         const dom = new JSDOM(response.data);
-        const products = []; // Array to store the scraped product data
-
-        // Selecting product elements using CSS selectors
+        const products = [];
         const productElements = dom.window.document.querySelectorAll('.s-main-slot .s-result-item');
-        
-        // Iterating over each product element to extract details
-        productElements.forEach((product) => {
-            const title = product.querySelector('h2 span')?.textContent; // Extracting product title
-            const rating = product.querySelector('.a-icon-alt')?.textContent; // Extracting product rating
-            const reviews = product.querySelector('.s-link-style .a-size-base')?.textContent; // Extracting number of reviews
-            const imageUrl = product.querySelector('.s-image')?.src; // Extracting product image URL
 
-            // Adding the product to the array if all details are available
+        productElements.forEach((product) => {
+            const title = product.querySelector('h2 span')?.textContent;
+            const rating = product.querySelector('.a-icon-alt')?.textContent;
+            const reviews = product.querySelector('.s-link-style .a-size-base')?.textContent;
+            const imageUrl = product.querySelector('.s-image')?.src;
+
             if (title && rating && reviews && imageUrl) {
-                products.push({
-                    title,
-                    rating,
-                    reviews,
-                    imageUrl,
-                });
+                products.push({ title, rating, reviews, imageUrl });
             }
         });
 
-        // Returning the array of products
         return products;
     } catch (error) {
-        // Logging any errors that occur during the scraping process
-        console.error('Error scraping Amazon:', error.message);
-        return []; // Returning an empty array in case of an error
+        // Differentiating between network errors and other errors
+        if (error.response) {
+            console.error(`ScraperAPI responded with status ${error.response.status}: ${error.response.data}`);
+        } else if (error.request) {
+            console.error('No response received from ScraperAPI:', error.message);
+        } else {
+            console.error('Error setting up the request:', error.message);
+        }
+        throw new Error('Failed to scrape Amazon. Please try again later.');
     }
 };
 
 // Route to handle Amazon scraping requests
 app.get('/api/scrape', async (req, res) => {
-    const keyword = req.query.keyword; // Extracting the keyword from the query parameters
+    const keyword = req.query.keyword;
+
+    // Validate the keyword
     if (!keyword) {
-        // Returning a 400 error if the keyword is missing
         return res.status(400).json({ error: 'Keyword is required' });
     }
-
-    // Calling the scrapeAmazon function with the provided keyword
-    const products = await scrapeAmazon(keyword);
-    if (products.length === 0) {
-        // Returning a 404 error if no products are found
-        return res.status(404).json({ error: 'No products found' });
+    if (keyword.length > 100) {
+        return res.status(400).json({ error: 'Keyword is too long. Maximum length is 100 characters.' });
     }
-    // Returning the scraped products as a JSON response
-    res.json(products);
+
+    try {
+        const products = await scrapeAmazon(keyword);
+        if (products.length === 0) {
+            return res.status(404).json({ error: 'No products found' });
+        }
+        res.json(products);
+    } catch (error) {
+        console.error('Error handling /api/scrape request:', error.message);
+        res.status(500).json({ error: 'An internal server error occurred. Please try again later.' });
+    }
 });
 
 // Starting the server and listening on the specified port
 app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`); // Logging the server URL
+    console.log(`Server running on http://localhost:${port}`);
 });
