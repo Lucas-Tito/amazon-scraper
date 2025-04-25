@@ -13,12 +13,26 @@ document.getElementById('scrape-btn').addEventListener('click', async () => {
     // Sending a GET request to the backend API with the keyword as a query parameter
     const response = await fetch(`http://localhost:3000/api/scrape?keyword=${encodeURIComponent(keyword)}`);
 
+    // Check if the HTTP status is not OK
+    if (!response.ok) {
+      console.error(`HTTP error! Status: ${response.status}`); // Logging the HTTP error status
+      alert(`Failed to fetch data. Server responded with status: ${response.status}`); // Alerting the user about the HTTP error
+      return;
+    }
+
     // Fetching the response as plain text to debug its content
     const textResponse = await response.text();
     console.log("Response text:", textResponse); // Logging the raw response text to the console for debugging
 
-    // Parsing the response text into JSON format
-    const data = JSON.parse(textResponse); // Manually parsing to check the structure of the response
+    let data;
+    try {
+      // Parsing the response text into JSON format
+      data = JSON.parse(textResponse); // Manually parsing to check the structure of the response
+    } catch (jsonError) {
+      console.error('Error parsing JSON:', jsonError); // Logging the JSON parsing error
+      alert('Failed to parse server response. Please try again later.'); // Alerting the user about the parsing error
+      return;
+    }
 
     // If the response contains an error, show an alert and stop execution
     if (data.error) {
@@ -49,8 +63,8 @@ document.getElementById('scrape-btn').addEventListener('click', async () => {
     });
   } catch (error) {
     // Logging any errors that occur during the fetch process
-    console.error('Error fetching data:', error);
+    console.error('Error fetching data:', error); // Logging the error for debugging
     // Showing an alert to the user if an error occurs
-    alert('An error occurred while scraping data.');
+    alert('An unexpected error occurred. Please check your internet connection or try again later.'); // Alerting the user about the error
   }
 });
