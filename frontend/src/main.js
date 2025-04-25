@@ -9,6 +9,12 @@ document.getElementById('scrape-btn').addEventListener('click', async () => {
     return;
   }
 
+  // Check if the keyword length exceeds the maximum limit
+  if (keyword.length > 100) {
+    alert('Keyword is too long. Please enter no more than 100 characters.');
+    return;
+  }
+
   try {
     // Sending a GET request to the backend API with the keyword as a query parameter
     const response = await fetch(`http://localhost:3000/api/scrape?keyword=${encodeURIComponent(keyword)}`);
