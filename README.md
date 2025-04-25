@@ -76,6 +76,16 @@ The frontend will be running at `http://localhost:5173`.
 2. Click the "Scrape Products" button.
 3. The backend (API) will fetch the product data from Amazon and return the information, which will be displayed on the frontend.
 
+## Main Files
+
+### Backend
+- **`server.js`**: The main backend file located in the `backend` directory. It handles API requests, performs scraping using **ScraperAPI**, and parses the HTML using **JSDOM**.
+
+### Frontend
+- **`src/main.js`**: The main JavaScript file located in the `frontend/src` directory. It handles user interactions, sends requests to the backend, and dynamically updates the DOM with the scraped product data.
+- **`index.html`**: The main HTML file located in the `frontend` directory.
+- **`style.css`**: The main CSS file located in the `frontend` directory.
+
 ### Dependencies
 
 #### Backend
