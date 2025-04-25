@@ -2,6 +2,7 @@
 document.getElementById('scrape-btn').addEventListener('click', async () => {
   // Retrieving the keyword entered by the user and trimming any extra spaces
   const keyword = document.getElementById('keyword').value.trim();
+  const loadingIndicator = document.getElementById('loading'); // Select the loading indicator
   
   // If the keyword is empty, show an alert and stop execution
   if (!keyword) {
@@ -14,6 +15,9 @@ document.getElementById('scrape-btn').addEventListener('click', async () => {
     alert('Keyword is too long. Please enter no more than 100 characters.');
     return;
   }
+
+  // Show the loading indicator
+  loadingIndicator.style.display = 'block';
 
   try {
     // Sending a GET request to the backend API with the keyword as a query parameter
@@ -72,5 +76,8 @@ document.getElementById('scrape-btn').addEventListener('click', async () => {
     console.error('Error fetching data:', error); // Logging the error for debugging
     // Showing an alert to the user if an error occurs
     alert('An unexpected error occurred. Please check your internet connection or try again later.'); // Alerting the user about the error
+  } finally {
+    // Hide the loading indicator
+    loadingIndicator.style.display = 'none';
   }
 });
