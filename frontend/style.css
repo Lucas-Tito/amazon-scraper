@@ -1,3 +1,4 @@
+/* Styling the body to center content and set a background color */
 body {
     font-family: Arial, sans-serif;
     display: flex;
@@ -6,37 +7,48 @@ body {
     height: 100vh;
     margin: 0;
     background-color: #f4f4f9;
-  }
-  
-  .container {
+}
+
+/* Styling the main container */
+.container {
     text-align: center;
     width: 100%;
     max-width: 600px;
     padding: 20px;
-  }
-  
-  #keyword {
+}
+
+/* Styling the input field for the keyword */
+#keyword {
     padding: 10px;
     width: 70%;
     margin-bottom: 10px;
-  }
-  
-  #scrape-btn {
+}
+
+/* Styling the scrape button */
+#scrape-btn {
     padding: 10px;
     background-color: #4CAF50;
     color: white;
     border: none;
     cursor: pointer;
-  }
-  
-  #products-list {
+}
+
+/* Styling the products list container */
+#products-list {
     margin-top: 20px;
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: wrap; /* Ensures items wrap to the next row */
     justify-content: space-around;
-  }
-  
-  .product {
+    overflow-y: auto; /* Enables vertical scrolling */
+    max-height: 70vh; /* Limits the height of the container */
+    padding: 10px;
+    border: 1px solid #ddd; /* Adds a border for visual separation */
+    background-color: #fff; /* Sets a white background */
+    border-radius: 8px; /* Adds rounded corners */
+}
+
+/* Styling individual product cards */
+.product {
     width: 200px;
     margin: 10px;
     padding: 10px;
@@ -44,19 +56,25 @@ body {
     border-radius: 8px;
     background-color: #fff;
     text-align: left;
-  }
-  
-  .product img {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow */
+}
+
+/* Styling product images */
+.product img {
     width: 100%;
     height: auto;
-  }
-  
-  .product h3 {
+    border-radius: 4px; /* Adds rounded corners to images */
+}
+
+/* Styling product titles */
+.product h3 {
     font-size: 16px;
     font-weight: bold;
-  }
-  
-  .product p {
+    margin: 10px 0 5px;
+}
+
+/* Styling product details (rating and reviews) */
+.product p {
     font-size: 14px;
-  }
-  
+    margin: 5px 0;
+}
