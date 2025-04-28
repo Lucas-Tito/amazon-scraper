@@ -1,23 +1,12 @@
-# Use the official Node.js image
-FROM node:18
+FROM node:alpine
 
-# Set the working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json
-COPY package.json ./
-
-# Install dependencies
-RUN npm install
-
-# Copy the rest of the application code
+# Não precisa incluir "frontend/" no caminho, pois já estamos nesse diretório
 COPY . .
 
-# Build the frontend
-RUN npm run build
+# Instalar um servidor simples para servir conteúdo estático
+RUN npm install -g serve
 
-# Expose the port the frontend runs on
 EXPOSE 5173
-
-# Start the Vite development server
-CMD ["npm", "run", "dev"]
+CMD ["serve", "-s", ".", "-l", "5173"]

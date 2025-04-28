@@ -1,20 +1,12 @@
-# Use the official Node.js image
-FROM node:18
+FROM oven/bun:latest
 
-# Set the working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json
-COPY package.json ./
+# Não precisa incluir "backend/" no caminho, pois já estamos nesse diretório
+COPY package.json bun.lock ./
+RUN bun install
 
-# Install dependencies
-RUN npm install
-
-# Copy the rest of the application code
 COPY . .
 
-# Expose the port the backend runs on
 EXPOSE 3000
-
-# Start the backend server
-CMD ["bun", "server.js"]
+CMD ["bun", "run", "server.js"]
