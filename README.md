@@ -15,24 +15,66 @@ This is a simple scraper to extract Amazon product data using **ScraperAPI** to 
 - **JSDOM**: Simulates browser behavior to extract data from the HTML page.
 - **CORS**: Allows requests between the frontend and backend.
 - **Frontend (Vanilla JavaScript and Vite)**: User interface for interaction.
+- **Docker Compose**: Simplifies the setup and running of the application.
 
-**Note:** The backend was set up using **Node.js with Express** and **Bun**.
+---
 
 ## How to Run the Project
 
-### Prerequisites
+*The following steps are based on an Ubuntu environment.*
+
+### Option 1: Using Docker (Recommended)
+
+#### Prerequisites
+
+Make sure you have **Docker** and **Docker Compose** installed on your machine. 
+
+#### Steps to Run
+
+1. Clone the repository:
+
+    ```bash
+    git clone https://github.com/your-repo/amazon-scraper.git
+    cd amazon-scraper
+    ```
+
+2. Build the Docker containers:
+
+    ```bash
+    sudo docker-compose build
+    ```
+
+3. Start the application:
+
+    ```bash
+    sudo docker-compose up
+    ```
+
+The frontend will be running at `http://localhost:5173`.
+
+---
+
+### Option 2: Without Docker (Manual Setup)
+
+#### Prerequisites
 
 Make sure you have **Node.js** and **Bun** installed on your machine. If not, install the latest version from [Node.js](https://nodejs.org/) and [Bun](https://bun.sh/).
 
-### Steps to Run
+#### Steps to Run
 
-#### 1. Backend Configuration (API)
+##### 1. Backend Configuration (API)
 
-1. Clone the repository.
-
-2. Install the backend dependencies:
+1. Clone the repository:
 
     ```bash
+    git clone https://github.com/your-repo/amazon-scraper.git
+    cd amazon-scraper
+    ```
+
+2. Navigate to the backend directory and install the dependencies:
+
+    ```bash
+    cd backend
     bun install
     ```
 
@@ -42,9 +84,7 @@ Make sure you have **Node.js** and **Bun** installed on your machine. If not, in
     bun add cors
     ```
 
-4. **Note:** While it is **not recommended**, I have left the API key in the file for the convenience of the HR team.
-
-5. Start the backend server:
+4. Start the backend server:
 
     ```bash
     bun server.js
@@ -52,9 +92,9 @@ Make sure you have **Node.js** and **Bun** installed on your machine. If not, in
 
 The backend will be running at `http://localhost:3000`.
 
-#### 2. Frontend Configuration
+##### 2. Frontend Configuration
 
-1. Navigate to the frontend directory (where the Vite code is) and install the dependencies:
+1. Navigate to the frontend directory and install the dependencies:
 
     ```bash
     cd frontend
@@ -69,12 +109,22 @@ The backend will be running at `http://localhost:3000`.
 
 The frontend will be running at `http://localhost:5173`.
 
+---
 
-### Testing the Application
+## Testing the Application
 
-1. In the frontend (`http://localhost:5173`), enter a keyword in the search box (e.g., "laptop").
-2. Click the "Scrape Products" button.
-3. The backend (API) will fetch the product data from Amazon and return the information, which will be displayed on the frontend.
+1. Open the frontend in your browser at `http://localhost:5173`.
+2. Enter a keyword in the search box (e.g., "laptop").
+3. Click the "Scrape Products" button.
+4. The backend (API) will fetch the product data from Amazon and return the information, which will be displayed on the frontend.
+
+---
+
+## Known Issues
+
+- **Long Loading Times**: The scraping process may take longer than expected, especially for keywords with many results. This is due to the time required to fetch and parse the Amazon search results page.    
+
+---
 
 ## Main Files
 
@@ -86,16 +136,18 @@ The frontend will be running at `http://localhost:5173`.
 - **`index.html`**: The main HTML file located in the `frontend` directory.
 - **`style.css`**: The main CSS file located in the `frontend` directory.
 
-### Dependencies
+---
 
-#### Backend
+## Dependencies
+
+### Backend
 
 - **express**: Web framework for Node.js.
 - **axios**: HTTP client for making requests.
 - **jsdom**: Simulates a browser to parse HTML and extract data.
 - **cors**: Middleware to enable CORS on the backend.
 
-#### Frontend
+### Frontend
 
 - **Vite**: Build tool for the frontend.
 - **Vanilla JavaScript**: For interaction and logic on the frontend.
