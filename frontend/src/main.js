@@ -1,83 +1,77 @@
-// Adding an event listener to the "scrape-btn" button
-document.getElementById('scrape-btn').addEventListener('click', async () => {
-  // Retrieving the keyword entered by the user and trimming any extra spaces
-  const keyword = document.getElementById('keyword').value.trim();
-  const loadingIndicator = document.getElementById('loading'); // Select the loading indicator
-  
-  // If the keyword is empty, show an alert and stop execution
-  if (!keyword) {
-    alert('Please enter a keyword!');
-    return;
-  }
+const API_URL = 'http://localhost:3000/api/scrape'; // Backend API URL
+const MAX_KEYWORD_LENGTH = 100; // Maximum allowed length for the keyword
 
-  // Check if the keyword length exceeds the maximum limit
-  if (keyword.length > 100) {
-    alert('Keyword is too long. Please enter no more than 100 characters.');
-    return;
-  }
+// Function to display error messages to the user
+function showError(message) {
+  alert(message); // Display an alert with the provided message
+}
 
-  // Show the loading indicator
-  loadingIndicator.style.display = 'block';
+// Function to display the list of products on the page
+function displayProducts(products) {
+  const productsList = document.getElementById('products-list'); // Select the product list container
+  productsList.innerHTML = ''; // Clear any existing content in the product list
+
+  // Iterate over the array of products and create HTML elements for each
+  products.forEach(product => {
+    const productElem = document.createElement('div'); // Create a new div for the product
+    productElem.classList.add('product'); // Add a CSS class for styling
+
+    // Set the inner HTML of the product element with the product details
+    productElem.innerHTML = `
+      <img src="${product.imageUrl}" alt="${product.title}"> <!-- Product image -->
+      <h3>${product.title}</h3> <!-- Product title -->
+      <p>Rating: ${product.rating}</p> <!-- Product rating -->
+      <p>Reviews: ${product.reviews}</p> <!-- Number of reviews -->
+    `;
+
+    productsList.appendChild(productElem); // Append the product element to the product list
+  });
+}
+
+// Function to fetch products from the backend API
+async function fetchProducts(keyword) {
+  const loadingIndicator = document.getElementById('loading'); // Select the loading indicator element
+  loadingIndicator.style.display = 'block'; // Show the loading indicator
 
   try {
-    // Sending a GET request to the backend API with the keyword as a query parameter
-    const response = await fetch(`http://localhost:3000/api/scrape?keyword=${encodeURIComponent(keyword)}`);
+    // Send a GET request to the backend API with the keyword as a query parameter
+    const response = await fetch(`${API_URL}?keyword=${encodeURIComponent(keyword)}`);
 
-    // Check if the HTTP status is not OK
+    // Check if the HTTP response status is not OK
     if (!response.ok) {
-      console.error(`HTTP error! Status: ${response.status}`); // Logging the HTTP error status
-      alert(`Failed to fetch data. Server responded with status: ${response.status}`); // Alerting the user about the HTTP error
-      return;
+      throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
-    // Fetching the response as plain text to debug its content
-    const textResponse = await response.text();
-    console.log("Response text:", textResponse); // Logging the raw response text to the console for debugging
+    const data = await response.json(); // Parse the response as JSON
 
-    let data;
-    try {
-      // Parsing the response text into JSON format
-      data = JSON.parse(textResponse); // Manually parsing to check the structure of the response
-    } catch (jsonError) {
-      console.error('Error parsing JSON:', jsonError); // Logging the JSON parsing error
-      alert('Failed to parse server response. Please try again later.'); // Alerting the user about the parsing error
-      return;
-    }
-
-    // If the response contains an error, show an alert and stop execution
+    // Check if the response contains an error
     if (data.error) {
-      alert(data.error);
-      return;
+      throw new Error(data.error);
     }
 
-    // Selecting the HTML element where the product list will be displayed
-    const productsList = document.getElementById('products-list');
-    productsList.innerHTML = ''; // Clearing any previous content in the product list
-
-    // Iterating over the array of products returned by the API
-    data.forEach(product => {
-      // Creating a new HTML element for each product
-      const productElem = document.createElement('div');
-      productElem.classList.add('product'); // Adding a CSS class for styling
-
-      // Setting the inner HTML of the product element with the product details
-      productElem.innerHTML = `
-        <img src="${product.imageUrl}" alt="${product.title}"> <!-- Product image -->
-        <h3>${product.title}</h3> <!-- Product title -->
-        <p>Rating: ${product.rating}</p> <!-- Product rating -->
-        <p>Reviews: ${product.reviews}</p> <!-- Number of reviews -->
-      `;
-
-      // Appending the product element to the product list in the DOM
-      productsList.appendChild(productElem);
-    });
+    displayProducts(data); // Display the products on the page
   } catch (error) {
-    // Logging any errors that occur during the fetch process
-    console.error('Error fetching data:', error); // Logging the error for debugging
-    // Showing an alert to the user if an error occurs
-    alert('An unexpected error occurred. Please check your internet connection or try again later.'); // Alerting the user about the error
+    console.error('Error fetching data:', error.message); // Log the error for debugging
+    showError('An error occurred while fetching products. Please try again later.'); // Show an error message to the user
   } finally {
-    // Hide the loading indicator
-    loadingIndicator.style.display = 'none';
+    loadingIndicator.style.display = 'none'; // Hide the loading indicator
   }
+}
+
+// Add an event listener to the "scrape-btn" button
+document.getElementById('scrape-btn').addEventListener('click', () => {
+  const keyword = document.getElementById('keyword').value.trim(); // Retrieve and trim the keyword
+
+  // Validate the keyword
+  if (!keyword) {
+    showError('Please enter a keyword!'); // Show an error if the keyword is empty
+    return;
+  }
+
+  if (keyword.length > MAX_KEYWORD_LENGTH) {
+    showError(`Keyword is too long. Maximum length is ${MAX_KEYWORD_LENGTH} characters.`); // Show an error if the keyword is too long
+    return;
+  }
+
+  fetchProducts(keyword); // Fetch products with the provided keyword
 });
