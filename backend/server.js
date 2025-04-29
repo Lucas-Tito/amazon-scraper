@@ -3,10 +3,11 @@ import axios from 'axios'; // Axios for making HTTP requests
 import { JSDOM } from 'jsdom'; // JSDOM for parsing HTML
 import cors from 'cors'; // CORS middleware to handle cross-origin requests
 
-
 const app = express(); // Initialize the Express application
 const port = process.env.PORT || 3000; // Port where the server will run
 const SCRAPER_API_KEY = 'c3e6bac546bfc3fa0880bac49f91ee18'; // API key for ScraperAPI (stored in environment variables)
+
+const cache = new Map(); // Simple in-memory cache for results
 
 // Configure CORS to allow requests from the frontend
 app.use(cors({
@@ -16,11 +17,17 @@ app.use(cors({
 
 // Function to scrape Amazon using ScraperAPI
 const scrapeAmazon = async (keyword) => {
+  // Check if data is already cached
+  if (cache.has(keyword)) {
+    return cache.get(keyword); // Return cached data if available
+  }
+
   const url = `https://www.amazon.com/s?k=${encodeURIComponent(keyword)}`; // Construct the Amazon search URL
   const apiUrl = `http://api.scraperapi.com?api_key=${SCRAPER_API_KEY}&url=${encodeURIComponent(url)}`; // Construct the ScraperAPI URL
 
   try {
-    const response = await axios.get(apiUrl); // Send a GET request to ScraperAPI
+    // Set a timeout of 5 seconds for the ScraperAPI request
+    const response = await axios.get(apiUrl, { timeout: 5000 });
     const dom = new JSDOM(response.data); // Parse the HTML response using JSDOM
     const products = []; // Array to store the scraped products
 
@@ -40,6 +47,8 @@ const scrapeAmazon = async (keyword) => {
       }
     });
 
+    // Cache the products before returning
+    cache.set(keyword, products); 
     return products; // Return the array of products
   } catch (error) {
     // Handle errors during the scraping process
