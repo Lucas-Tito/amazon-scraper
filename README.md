@@ -111,6 +111,32 @@ The frontend will be running at `http://localhost:5173`.
 
 ---
 
+## Troubleshooting
+
+### Error: Address Already in Use (Port 3000)
+
+If you encounter the error `Error: listen EADDRINUSE: address already in use :::<PORT>` when starting the backend, it means that port is already being used by another process. Follow these steps to resolve the issue:
+
+1. Identify the process using the port:
+
+    ```bash
+    lsof -i :<PORT>
+    ```
+
+    This will display a list of processes using the port. Look for the **PID** (Process ID) in the output.
+
+2. Terminate the process using the port:
+
+    ```bash
+    kill -9 <PID>
+    ```
+
+    Replace `<PID>` with the Process ID from the previous command.
+
+3. Try starting the application again:
+
+---
+
 ## Testing the Application
 
 1. Open the frontend in your browser at `http://localhost:5173`.
