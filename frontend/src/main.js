@@ -75,3 +75,10 @@ document.getElementById('scrape-btn').addEventListener('click', () => {
 
   fetchProducts(keyword); // Fetch products with the provided keyword
 });
+
+// Add an event listener to the "keyword" input field to detect the Enter key
+document.getElementById('keyword').addEventListener('keypress', (event) => {
+  if (event.key === 'Enter') { // Check if the pressed key is "Enter"
+    document.getElementById('scrape-btn').click(); // Trigger the button click
+  }
+});
